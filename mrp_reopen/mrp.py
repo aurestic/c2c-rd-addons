@@ -23,7 +23,7 @@
 # FIXME remove logger lines or change to debug
  
 from openerp.osv import fields, osv
-import openerp.netsvc
+from openerp import workflow
 from openerp.tools.translate import _
 import time
 import logging
@@ -116,10 +116,10 @@ class mrp_production(osv.osv):
 
             #self.write(cr, uid, mrp.id, {'state':'confirmed'})
             self.write(cr, uid, mrp.id, {'state':'draft'})
-            wf_service = netsvc.LocalService("workflow")
+            # wf_service = netsvc.LocalService("workflow")
 
-            wf_service.trg_delete(uid, 'mrp.production', mrp.id, cr)
-            wf_service.trg_create(uid, 'mrp.production', mrp.id, cr)
+            workflow.trg_delete(uid, 'mrp.production', mrp.id, cr)
+            workflow.trg_create(uid, 'mrp.production', mrp.id, cr)
 
             message = _("Manufacturing order '%s' is reset to waiting") % (
                     mrp.name,)
