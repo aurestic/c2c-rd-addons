@@ -49,6 +49,8 @@ class mrp_production(osv.osv):
         account_move_obj = self.pool.get('account.move')
         report_xml_obj = self.pool.get('ir.actions.report.xml')
         attachment_obj = self.pool.get('ir.attachment')
+        workcenter_obj = self.pool.get('mrp.production.workcenter.line')
+        mrp_product_obj = self.pool.get('mrp.production.product.line')
 
         now = ' ' + _('Invalid') + time.strftime(' [%Y%m%d %H%M%S]')
         for mrp in self.browse(cr, uid, ids):
@@ -59,6 +61,10 @@ class mrp_production(osv.osv):
             # reset to waiting is better but needs complex workflow modification
             # no time to do and test this
             #move_line_obj.write(cr, uid, ml_ids, {'state':'waiting'})
+            wc_ids = [wc.id for wc in mrp.workcenter_lines]
+            workcenter_obj.unlink(cr, uid, wc_ids)
+            pd_ids = [pd.id for pd in mrp.product_lines]
+            mrp_product_obj.unlink(cr, uid, pd_ids)
             ml_ids = []
             for ml in mrp.move_lines:
                 ml_ids.append(ml.id)
